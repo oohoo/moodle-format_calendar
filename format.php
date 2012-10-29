@@ -92,7 +92,7 @@ if ($thissection->summary or $thissection->sequence or $PAGE->user_is_editing())
 {
 
     // Note, 'right side' is BEFORE content.
-    echo '<thead><tr><td colspan="' . $nbDaysByRow . '" id="sectiontd-0" class="sectiontd main clearfix" ><ul class="sectionul"><li id="sectiontd-0" class="section">';
+    echo '<thead><tr><td colspan="' . $nbDaysByRow . '" id="sectiontd-0" class="sectiontd main clearfix" ><ul class="sectionul"><li id="sectiontd-0" class="section main yui3-dd-drop">';
     echo '<div class="right side" >&nbsp;</div>';
     echo '<div class="content">';
 
@@ -251,11 +251,11 @@ while ($daydate < $course->enddate)
 
         if (($nbElemsOnRow - 1) == 0 || $nbElemsOnRow == $nbDaysByRow)
         {
-            echo '<td ' . $hideWeekend . ' id="sectiontd-' . $section . '" class="sectiontd main ' . $sectionstyle . ' weekday-' . ($nbElemsOnRow - 1) . '" ><ul class="sectionul"><li id="section-' . $section . '" class="section">';
+            echo '<td ' . $hideWeekend . ' id="sectiontd-' . $section . '" class="sectiontd main ' . $sectionstyle . ' weekday-' . ($nbElemsOnRow - 1) . '" ><ul class="sectionul"><li id="section-' . $section . '" class="section main yui3-dd-drop">';
         }
         else
         {
-            echo '<td id="sectiontd-' . $section . '" class="sectiontd main ' . $sectionstyle . ' weekday-' . ($nbElemsOnRow - 1) . '" ><ul class="sectionul"><li id="section-' . $section . '" class="section">';
+            echo '<td id="sectiontd-' . $section . '" class="sectiontd main ' . $sectionstyle . ' weekday-' . ($nbElemsOnRow - 1) . '" ><ul class="sectionul"><li id="section-' . $section . '" class="section main yui3-dd-drop">';
         }
 
         $dayperiod = $dayday;
