@@ -13,7 +13,6 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later  **
  * *************************************************************************
  * ************************************************************************ */
-
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/filelib.php');
@@ -31,12 +30,6 @@ $day = optional_param('day', -1, PARAM_INT);
 
 $renderer = $PAGE->get_renderer('format_calendar');
 
-/* if ($day != -1) {
-  $displaysection = course_set_display($course->id, $day);
-  } else {
-  $displaysection = course_get_display($course->id);
-  } */
-
 $streditsummary = get_string('editsummary');
 $stradd = get_string('add');
 $stractivities = get_string('activities');
@@ -53,6 +46,10 @@ if ($editing)
     $strmoveup = get_string('moveup');
     $strmovedown = get_string('movedown');
 }
+
+// make sure all sections are created
+$course = course_get_format($course)->get_course();
+course_create_sections_if_missing($course, range(0, $course->numsections));
 
 $context = get_context_instance(CONTEXT_COURSE, $course->id);
 
@@ -170,8 +167,6 @@ echo '</tr>';
 
 while ($daydate < $course->enddate)
 {
-
-
     $nextdaydate = $daydate + ($dayofseconds);
     $dayday = userdate($daydate, $strftimedateshort);
 
@@ -192,17 +187,6 @@ while ($daydate < $course->enddate)
     }
 
     $showsection = (has_capability('moodle/course:viewhiddensections', $context) or $thissection->visible or !$course->hiddensections);
-
-    /*
-      if (!empty($displaysection) and $displaysection != $section) {  // Check this day is visible
-      if ($showsection) {
-      $sectionmenu[$section] = get_section_name($course, $thissection);
-      }
-      $section++;
-      $daydate = $nextdaydate;
-      continue;
-      }
-     */
 
     if ($showsection)
     {
@@ -332,7 +316,7 @@ while ($daydate < $course->enddate)
     $daydate = $nextdaydate;
 }
 
-if (/* !$displaysection && */ $PAGE->user_is_editing() && has_capability('moodle/course:update', get_context_instance(CONTEXT_COURSE, $course->id)))
+if ($PAGE->user_is_editing() && has_capability('moodle/course:update', get_context_instance(CONTEXT_COURSE, $course->id)))
 {
     // print stealth sections if present
     $modinfo = get_fast_modinfo($course);
@@ -344,7 +328,7 @@ if (/* !$displaysection && */ $PAGE->user_is_editing() && has_capability('moodle
         }
 
         echo '<tr>';
-        echo '<td id="section-' . $section . '" class="section main clearfix stealth hidden">'; //'<div class="left side">&nbsp;</div>';
+        echo '<td id="section-' . $section . '" class="section main clearfix stealth hidden">'; 
 
         echo '<div class="left side">';
         echo '</div>';

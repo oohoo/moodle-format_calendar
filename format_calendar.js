@@ -12,6 +12,18 @@
  * *************************************************************************
  * ************************************************************************ */
 
+YUI().use('node', function(Y)
+{
+    Y.on("domready", function()
+    {
+        Y.all('.iconlarge.activityicon').each(function(node)
+        {
+            node.removeClass('iconlarge').addClass('icon');
+        });
+    }); 
+});
+
+
 //Date extention to get the week of the year
 Date.prototype.getWeek = function()
 {
@@ -24,22 +36,23 @@ Date.prototype.getWeek = function()
 function toggleWeekends()
 {
     var displayed = 'none';
-    if (YAHOO.util.Dom.getElementsByClassName('weekday-0')[0].style['display'] == 'none')
+    YUI().use('node', function(Y)
     {
-        displayed = 'table-cell';
-    }
+        if (Y.one('.weekday-0').getStyle('display') == 'none')
+        {
+            displayed = 'table-cell';
+        }
     
-    var elems = YAHOO.util.Dom.getElementsByClassName('weekday-0');
-    for(var i=0;i< elems.length;i++)
-    {
-        YAHOO.util.Dom.setStyle([elems[i]], 'display', displayed);
-    }
+        Y.all('.weekday-0').each(function(node)
+        {
+            node.setStyle('display', displayed);
+        });
     
-    var elems = YAHOO.util.Dom.getElementsByClassName('weekday-6');
-    for(var i=0;i< elems.length;i++)
-    {
-        YAHOO.util.Dom.setStyle([elems[i]], 'display', displayed);
-    }
+        Y.all('.weekday-6').each(function(node)
+        {
+            node.setStyle('display', displayed);
+        });
+    });
 }
 
 
@@ -47,43 +60,44 @@ var activeMonth;
 //Display all data of the course
 function displayAllMonths()
 {
-    var elems = YAHOO.util.Dom.getElementsByClassName('week');
-    activeMonth = '';
-    for(var i=0;i< elems.length;i++)
+    YUI().use('node', function(Y)
     {
-        YAHOO.util.Dom.setStyle([elems[i]], 'display', 'table-row');
-    }
-    displayPreviousNextMonthButton(false);
-    displayPreviousNextWeekButton(false);
+        activeMonth = '';
+        Y.all('.week').each(function(node)
+        {
+            node.setStyle('display', 'table-row');
+        });
+        displayPreviousNextMonthButton(false);
+        displayPreviousNextWeekButton(false);
+    });
 }
 
 //Display the selected month
 function displayMonth(month)
 {
-    var elems = YAHOO.util.Dom.getElementsByClassName('week');
-    var elemsDisplay = YAHOO.util.Dom.getElementsByClassName('month-'+month);
-    //If there is no elements in this month, do nothing
-    if (elemsDisplay.length>0)
+    YUI().use('node', function(Y)
     {
-        activeMonth = month;
-        for(var i=0;i< elems.length;i++)
+        if(Y.all('.month-'+month).size() > 0)
         {
-            YAHOO.util.Dom.setStyle([elems[i]], 'display', 'none');
-        }
+            Y.all('.week').each(function(node)
+            {
+                activeMonth = month;
+                node.setStyle('display', 'none');
+            });
+            Y.all('.month-'+month).each(function(node)
+            {
+                node.setStyle('display', 'table-row');
+            });
+            displayPreviousNextMonthButton(true);
+            displayPreviousNextWeekButton(false);
 
-        for(i=0;i< elemsDisplay.length;i++)
-        {
-            YAHOO.util.Dom.setStyle([elemsDisplay[i]], 'display', 'table-row');
+            return true;
         }
-        displayPreviousNextMonthButton(true);
-        displayPreviousNextWeekButton(false);
-    
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+        else
+        {
+            return false;
+        }
+    });
 }
 
 //Display the month of today
@@ -133,18 +147,20 @@ function displayNextMonth()
 //Display the action buttons for the next previous month
 function displayPreviousNextMonthButton(display)
 {
-    var previous = YAHOO.util.Dom.get('displayPreviousMonth');
-    var next = YAHOO.util.Dom.get('displayNextMonth');
-    if(display)
+    YUI().use('node', function(Y)
     {
-        YAHOO.util.Dom.setStyle([previous], 'display', 'inline');
-        YAHOO.util.Dom.setStyle([next], 'display', 'inline');
-    }
-    else
-    {
-        YAHOO.util.Dom.setStyle([previous], 'display', 'none');
-        YAHOO.util.Dom.setStyle([next], 'display', 'none');
-    }
+        var attr = '';
+        if(display)
+        {
+            attr = 'inline';
+        }
+        else
+        {
+            attr = 'none';
+        }
+        Y.all('#displayPreviousMonth').setStyle('display', attr);
+        Y.all('#displayNextMonth').setStyle('display', attr);
+    });
 }
 
 
@@ -152,30 +168,29 @@ var activeWeek;
 //Display the selected week
 function displayWeek(week)
 {
-    var elems = YAHOO.util.Dom.getElementsByClassName('week');
-    var elemsDisplay = YAHOO.util.Dom.getElementsByClassName('week-'+week);
-    //If there is no elements in this month, do nothing
-    if (elemsDisplay.length>0)
+    YUI().use('node', function(Y)
     {
-        activeWeek = week;
-        for(var i=0;i< elems.length;i++)
+        if(Y.all('.week-'+week).size() > 0)
         {
-            YAHOO.util.Dom.setStyle([elems[i]], 'display', 'none');
-        }
+            Y.all('.week').each(function(node)
+            {
+                activeWeek = week;
+                node.setStyle('display', 'none');
+            });
+            Y.all('.week-'+week).each(function(node)
+            {
+                node.setStyle('display', 'table-row');
+            });
+            displayPreviousNextWeekButton(true);
+            displayPreviousNextMonthButton(false);
 
-        for(i=0;i< elemsDisplay.length;i++)
-        {
-            YAHOO.util.Dom.setStyle([elemsDisplay[i]], 'display', 'table-row');
+            return true;
         }
-        
-        displayPreviousNextWeekButton(true);
-        displayPreviousNextMonthButton(false);
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+        else
+        {
+            return false;
+        }
+    });
 }
 
 //Display the week of today
@@ -225,18 +240,20 @@ function displayNextWeek()
 //Display the action buttons for the next previous week
 function displayPreviousNextWeekButton(display)
 {
-    var previous = YAHOO.util.Dom.get('displayPreviousWeek');
-    var next = YAHOO.util.Dom.get('displayNextWeek');
-    if(display)
+    YUI().use('node', function(Y)
     {
-        YAHOO.util.Dom.setStyle([previous], 'display', 'inline');
-        YAHOO.util.Dom.setStyle([next], 'display', 'inline');
-    }
-    else
-    {
-        YAHOO.util.Dom.setStyle([previous], 'display', 'none');
-        YAHOO.util.Dom.setStyle([next], 'display', 'none');
-    }
+        var attr = '';
+        if(display)
+        {
+            attr = 'inline';
+        }
+        else
+        {
+            attr = 'none';
+        }
+        Y.all('#displayPreviousWeek').setStyle('display', attr);
+        Y.all('#displayNextWeek').setStyle('display', attr);
+    });
 }
 
 
