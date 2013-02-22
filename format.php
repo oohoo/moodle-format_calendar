@@ -176,14 +176,8 @@ while ($daydate < $course->enddate)
     }
     else
     {
-        $thissection = new stdClass();
-        $thissection->course = $course->id;   // Create a new day structure
-        $thissection->section = $section;
-        $thissection->name = null;
-        $thissection->summary = '';
-        $thissection->summaryformat = FORMAT_HTML;
-        $thissection->visible = 1;
-        $thissection->id = $DB->insert_record('course_sections', $thissection);
+        $thissection = $DB->get_record('course_sections', array('course'=>$course->id, 'section' => $section));
+        $sections[$section] = $thissection;
     }
 
     $showsection = (has_capability('moodle/course:viewhiddensections', $context) or $thissection->visible or !$course->hiddensections);
