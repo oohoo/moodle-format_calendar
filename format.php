@@ -29,6 +29,7 @@ $hideWeekend = ' style="display:none;" ';
 $day = optional_param('day', -1, PARAM_INT);
 
 $renderer = $PAGE->get_renderer('format_calendar');
+$corerenderer = $PAGE->get_renderer('core', 'course');
 
 $streditsummary = get_string('editsummary');
 $stradd = get_string('add');
@@ -115,11 +116,11 @@ if ($thissection->summary or $thissection->sequence or $PAGE->user_is_editing())
     }
     echo '</div>';
 
-    print_section($course, $thissection, $mods, $modnamesused);
+    echo $corerenderer->course_section_cm_list($course, $thissection);
 
     if ($PAGE->user_is_editing())
     {
-        print_section_add_menus($course, $section, $modnames);
+        echo $corerenderer->course_section_add_cm_control($course, $section);
     }
 
     echo '</div>';
@@ -268,11 +269,11 @@ while ($daydate < $course->enddate)
             }
             echo '</div>';
 
-            print_section($course, $thissection, $mods, $modnamesused);
+            echo $corerenderer->course_section_cm_list($course, $thissection);
 
             if ($PAGE->user_is_editing())
             {
-                print_section_add_menus($course, $section, $modnames);
+                echo $corerenderer->course_section_cm_list($course, $thissection);
             }
         }
 
@@ -331,7 +332,7 @@ if ($PAGE->user_is_editing() && has_capability('moodle/course:update', get_conte
         echo '</div>';
         echo '<div class="content">';
         echo $OUTPUT->heading(get_string('orphanedactivities'), 3, 'sectionname');
-        print_section($course, $thissection, $mods, $modnamesused);
+        echo $corerenderer->course_section_cm_list($course, $thissection);
         echo '</div>';
         echo "</td>\n";
         echo "</tr>\n";
