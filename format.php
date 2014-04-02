@@ -52,7 +52,15 @@ if ($editing)
 $course = course_get_format($course)->get_course();
 course_create_sections_if_missing($course, range(0, $course->numsections));
 
-$context = get_context_instance(CONTEXT_COURSE, $course->id);
+//Replace get_context_instance by the class for moodle 2.6+
+if(class_exists('context_module'))
+{
+    $context = context_course::instance($course->id);
+}
+else
+{
+    $context = get_context_instance(CONTEXT_COURSE, $course->id);
+}
 
 //Print the Your progress icon if the track completion is enabled
 $completioninfo = new completion_info($course);
@@ -90,7 +98,8 @@ if ($thissection->summary or $thissection->sequence or $PAGE->user_is_editing())
 {
 
     // Note, 'right side' is BEFORE content.
-    echo '<thead><tr><td colspan="' . $nbDaysByRow . '" id="sectiontd-0" class="sectiontd main clearfix" ><ul class="sectionul"><li id="sectiontd-0" class="section main yui3-dd-drop">';
+    echo '<thead><tr><td colspan="' . $nbDaysByRow . '" id="sectiontd-0" class="sectiontd main clearfix" ><ul class="sectionul">';
+    echo '<li id="sectiontd-0" class="section main yui3-dd-drop" aria-label="' . $thissection->name . '" role="region">';
     echo '<div class="right side" >&nbsp;</div>';
     echo '<div class="content">';
 
@@ -101,14 +110,22 @@ if ($thissection->summary or $thissection->sequence or $PAGE->user_is_editing())
 
     echo '<div class="summary">';
 
-    $coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
+    //Replace get_context_instance by the class for moodle 2.6+
+    if(class_exists('context_module'))
+    {
+        $coursecontext = context_course::instance($course->id);
+    }
+    else
+    {
+        $coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
+    }
     $summarytext = file_rewrite_pluginfile_urls($thissection->summary, 'pluginfile.php', $coursecontext->id, 'course', 'section', $thissection->id);
     $summaryformatoptions = new stdClass;
     $summaryformatoptions->noclean = true;
     $summaryformatoptions->overflowdiv = true;
     echo format_text($summarytext, $thissection->summaryformat, $summaryformatoptions);
 
-    if ($PAGE->user_is_editing() && has_capability('moodle/course:update', get_context_instance(CONTEXT_COURSE, $course->id)))
+    if ($PAGE->user_is_editing() && has_capability('moodle/course:update', $coursecontext))
     {
         echo '<p><a title="' . $streditsummary . '" ' .
         ' href="editsection.php?id=' . $thissection->id . '"><img src="' . $OUTPUT->pix_url('t/edit') . '" ' .
@@ -227,18 +244,26 @@ while ($daydate < $course->enddate)
         {
             $sectionstyle = '';
         }
-
+        
+        $dayperiod = $dayday;
+        
+        if (!isset($thissection->name) || ($thissection->name === NULL))
+        {
+            $thissection->name = $currenttext . $dayperiod ;
+        }
+        
         if (($nbElemsOnRow - 1) == 0 || $nbElemsOnRow == $nbDaysByRow)
         {
-            echo '<td ' . $hideWeekend . ' id="sectiontd-' . $section . '" class="sectiontd main ' . $sectionstyle . ' weekday-' . ($nbElemsOnRow - 1) . '" ><ul class="sectionul"><li id="section-' . $section . '" class="section main yui3-dd-drop">';
+            echo '<td ' . $hideWeekend . ' id="sectiontd-' . $section . '" class="sectiontd main ' . $sectionstyle . ' weekday-' . ($nbElemsOnRow - 1) . '" ><ul class="sectionul">';
+            echo '<li id="section-' . $section . '" class="section main yui3-dd-drop" aria-label="' . $thissection->name . '" role="region">';
         }
         else
         {
-            echo '<td id="sectiontd-' . $section . '" class="sectiontd main ' . $sectionstyle . ' weekday-' . ($nbElemsOnRow - 1) . '" ><ul class="sectionul"><li id="section-' . $section . '" class="section main yui3-dd-drop">';
+            echo '<td id="sectiontd-' . $section . '" class="sectiontd main ' . $sectionstyle . ' weekday-' . ($nbElemsOnRow - 1) . '" ><ul class="sectionul">';
+            echo '<li id="section-' . $section . '" class="section main yui3-dd-drop" aria-label="' . $thissection->name . '" role="region">';
         }
 
-        $dayperiod = $dayday;
-
+        
         echo '<div class="content">';
         if (!has_capability('moodle/course:viewhiddensections', $context) and !$thissection->visible)
         {   // Hidden for students
@@ -255,14 +280,22 @@ while ($daydate < $course->enddate)
                 echo $OUTPUT->heading($currenttext . $dayperiod, 3, 'daydates');
             }
             echo '<div class="summary">';
-            $coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
+            //Replace get_context_instance by the class for moodle 2.6+
+            if(class_exists('context_module'))
+            {
+                $coursecontext = context_course::instance($course->id);
+            }
+            else
+            {
+                $coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
+            }
             $summarytext = file_rewrite_pluginfile_urls($thissection->summary, 'pluginfile.php', $coursecontext->id, 'course', 'section', $thissection->id);
             $summaryformatoptions = new stdClass;
             $summaryformatoptions->noclean = true;
             $summaryformatoptions->overflowdiv = true;
             echo format_text($summarytext, $thissection->summaryformat, $summaryformatoptions);
 
-            if ($PAGE->user_is_editing() && has_capability('moodle/course:update', get_context_instance(CONTEXT_COURSE, $course->id)))
+            if ($PAGE->user_is_editing() && has_capability('moodle/course:update', $coursecontext))
             {
                 echo ' <a title="' . $streditsummary . '" href="editsection.php?id=' . $thissection->id . '">' .
                 '<img src="' . $OUTPUT->pix_url('t/edit') . '" class="iconsmall edit" alt="' . $streditsummary . '" /></a><br /><br />';
@@ -273,7 +306,7 @@ while ($daydate < $course->enddate)
 
             if ($PAGE->user_is_editing())
             {
-                echo $corerenderer->course_section_cm_list($course, $thissection);
+                echo $corerenderer->course_section_add_cm_control($course, $section);
             }
         }
 
@@ -311,7 +344,17 @@ while ($daydate < $course->enddate)
     $daydate = $nextdaydate;
 }
 
-if ($PAGE->user_is_editing() && has_capability('moodle/course:update', get_context_instance(CONTEXT_COURSE, $course->id)))
+//Replace get_context_instance by the class for moodle 2.6+
+if(class_exists('context_module'))
+{
+    $context_check = context_course::instance($course->id);
+}
+else
+{
+    $context_check = get_context_instance(CONTEXT_COURSE, $course->id);
+}
+
+if ($PAGE->user_is_editing() && has_capability('moodle/course:update', $context_check))
 {
     // print stealth sections if present
     $modinfo = get_fast_modinfo($course);

@@ -54,4 +54,3 @@ class format_calendar_renderer extends format_section_renderer_base
     }
 }
 
-?>

@@ -147,3 +147,12 @@
     margin: 0;
 }
 
+
+.editing .course-content table.days ul.section li.activity div div.activityinstance {
+    padding-left: 22px;
+    padding-right: 10px;
+}
+
+.editing .course-content table.days ul.section .filler {
+    display: none;
+}

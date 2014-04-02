@@ -46,8 +46,17 @@ class format_calendar extends format_base
         // We can't add a node without text
         if (!empty($section->name))
         {
+            //Replace get_context_instance by the class for moodle 2.6+
+            if(class_exists('context_module'))
+            {
+                $context = context_course::instance($course->id);
+            }
+            else
+            {
+                $context = get_context_instance(CONTEXT_COURSE, $course->id);
+            }
             // Return the name the user set
-            return format_string($section->name, true, array('context' => get_context_instance(CONTEXT_COURSE, $course->id)));
+            return format_string($section->name, true, array('context' => $context));
         }
         else if ($section->section == 0)
         {
@@ -314,6 +323,8 @@ class format_calendar extends format_base
      */
     public function update_course_format_options($data, $oldcourse = null)
     {
+        global $DB;
+        
         if ($oldcourse !== null)
         {
             $data = (array) $data;
